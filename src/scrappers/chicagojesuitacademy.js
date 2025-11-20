@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import puppeteer from "puppeteer-core";
+import puppeteer from "puppeteer";
 
 const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
 const clean = (s = "") => s.replace(/\s+/g, " ").trim();
@@ -16,9 +16,8 @@ export async function scrapeChicagojesuitacademy() {
   const csvFile = path.join(outputDir, `${school}_faculty.csv`);
 
   const browser = await puppeteer.launch({
-    headless: false,
-    executablePath:
-      "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    headless: true,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
 
   const page = await browser.newPage();

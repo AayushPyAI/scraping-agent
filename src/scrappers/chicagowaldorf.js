@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import puppeteer from "puppeteer-core";
+import puppeteer from "puppeteer";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const clean = (s = "") => s.replace(/\s+/g, " ").trim();
@@ -19,8 +19,6 @@ export async function scrapeChicagowaldorf() {
 
   const browser = await puppeteer.launch({
     headless: true,
-    executablePath:
-      "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
 
