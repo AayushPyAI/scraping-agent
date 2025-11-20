@@ -1,3 +1,4 @@
+import { scrapeAssociationHouse } from "./scrappers/association_house.js";
 import { scrapeChicagochristian } from "./scrappers/chicagochristian.js";
 import { scrapeChicagocollegiate } from "./scrappers/chicagocollegiate.js";
 import { scrapeChicagocommons } from "./scrappers/chicagocommons.js";
@@ -7,12 +8,16 @@ import { scrapeChicagojewishdayschool } from "./scrappers/chicagojewishdayschool
 import { scrapeChicagoparkschool } from "./scrappers/chicagoparkschool.js";
 import { scrapeChicagowaldorf } from "./scrappers/chicagowaldorf.js";
 import { scrapeCPSLeadership } from "./scrappers/cpsLeadership.js";
+import { scrapeD187 } from "./scrappers/d187.js";
 import { scrapeHsaswchicago } from "./scrappers/hsaswchicago.js";
 import { scrapeLatinschool } from "./scrappers/latinschool.js";
 import { scrapeLyceechicago } from "./scrappers/lyceechicago.js";
 import { scrapeNobleschools } from "./scrappers/nobleschools.js";
 import { scrapeMontessoriAcademyChicago } from "./scrappers/ontessoriacademychicago.js";
+import { scrapeEFACChicago } from "./scrappers/scrape_efac_chicago.js";
+import { scrapeGermanSchoolChicago } from "./scrappers/scrape_german_school_chicago.js";
 import { scrapeSd170 } from "./scrappers/sd170.js";
+import { scrapeToddlerTown } from "./scrappers/toddlertown.js";
 
 async function main() {
   console.log("----------------------------------------------------");
@@ -34,7 +39,12 @@ async function main() {
   // await scrapeMontessoriAcademyChicago();
   // await scrapeLatinschool();
   // await scrapeChicagocollegiate();
-  await scrapeLyceechicago();
+  // await scrapeLyceechicago();
+  // await scrapeD187();
+  // await scrapeToddlerTown();
+  // await scrapeAssociationHouse();
+  // await scrapeEFACChicago();
+  await scrapeGermanSchoolChicago();
   console.log("----------------------------------------------------");
   console.log("All scrapers completed!");
   console.log("----------------------------------------------------");
