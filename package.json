@@ -16,6 +16,7 @@
     "cheerio": "^1.1.2",
     "dotenv": "^17.2.3",
     "fs": "^0.0.1-security",
+    "node-fetch": "^3.3.2",
     "playwright": "^1.56.1",
     "playwright-extra": "^4.3.6",
     "playwright-stealth": "^0.0.1",
