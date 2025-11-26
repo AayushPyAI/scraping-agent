@@ -1,0 +1,98 @@
+import 'dotenv/config';
+import { WebScraper } from './src/scraper.js';
+// import { extractContacts } from './src/ai-extractor.js';
+import { exportToCSV } from './src/csv-export.js';
+// import { uploadContactsToHubSpot } from './src/hubspot.js';
+// import { enrollInWorkflow } from './src/email-automation.js';
+import fs from 'fs/promises';
+import { AIExtractor } from './src/ai-extractor.js';
+
+async function runAgent(nicheSearchUrl, options = {}) {
+  const {
+    maxSchools = 10,
+    workflowId = null,
+    outputFile = `contacts-${Date.now()}.csv`
+  } = options;
+
+  const scraper = new WebScraper();
+  const allContacts = [];
+
+  try {
+    console.log('🚀 Starting AI Contact Agent...\n');
+    await scraper.init();
+
+    // Step 1: Scrape Niche for school links
+    console.log('📍 Step 1: Scraping Niche.com for schools...');
+    const { schoolLinks } = await scraper.scrapeNichePage(nicheSearchUrl);
+    console.log(`   Found ${schoolLinks.length} school links\n`);
+
+    // Step 2: Process each school
+    const schoolsToProcess = schoolLinks.slice(0, maxSchools);
+    
+    for (let i = 0; i < schoolsToProcess.length; i++) {
+      const schoolLink = schoolsToProcess[i];
+      console.log(`📍 Step 2.${i + 1}: Processing school ${i + 1}/${schoolsToProcess.length}`);
+      
+      try {
+        // Get school page and find official website
+        const { schoolInfo } = await scraper.scrapeNicheSchoolProfile(schoolLink);
+        const officialWebsite = schoolInfo.website;
+        if (!officialWebsite) {
+          console.log('   ⚠️ No official website found, skipping...\n');
+          continue;
+        }
+        console.log("schoolInfo", schoolInfo);
+        
+        console.log(`   Found website: ${officialWebsite}`);
+        
+        // Scrape school's official website for contacts
+        console.log(`[Step 3] Scraping school website for contacts...`, officialWebsite,schoolInfo);
+        const websiteContent = await scraper.scrapeContactPage(officialWebsite);
+        
+        // Use AI to extract contacts
+        console.log(`[Step 4] Extracting contacts with AI...`)
+        // const extracted = await AIExtractor.extractContacts(websiteContent, schoolInfo)
+
+      } catch (error) {
+        console.log(`   ❌ Error: ${error.message}\n`);
+      }
+    }
+
+    // Step 3: Export to CSV
+    console.log('📍 Step 3: Exporting to CSV...');
+    await fs.mkdir('output', { recursive: true });
+    const csvPath = await exportToCSV(allContacts, outputFile);
+
+    // // Step 4: Upload to HubSpot
+    // console.log('\n📍 Step 4: Uploading to HubSpot...');
+    // const hubspotResults = await uploadContactsToHubSpot(allContacts);
+
+    // // Step 5: Enroll in email workflow/funnel
+    // if (workflowId) {
+    //   console.log('\n📍 Step 5: Enrolling contacts in email funnel...');
+    //   for (const contact of allContacts) {
+    //     await enrollInWorkflow(contact.email, workflowId);
+    //     await new Promise(r => setTimeout(r, 500)); // Rate limit
+    //   }
+    // }
+
+    // Summary
+    console.log('\n' + '='.repeat(50));
+    console.log('🎉 Agent Complete!');
+    console.log(`   Total contacts extracted: ${allContacts.length}`);
+    console.log(`   CSV exported to: ${csvPath}`);
+    // console.log(`   HubSpot synced: ${hubspotResults.success.length}`);
+    console.log('='.repeat(50));
+
+    return { contacts: allContacts, csvPath };
+
+  } finally {
+    await scraper.close();
+  }
+}
+
+// Run the agent
+runAgent('https://www.niche.com/k12/search/best-schools/?geoip=true', {
+  maxSchools: 5,
+  workflowId: 'your-hubspot-workflow-id' // Optional
+});
